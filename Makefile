@@ -1,8 +1,8 @@
 QUORUM ?= 3
 DF_MAX_RESULT := $(shell expr $(QUORUM) + 5)
-PATH_PROJECT_JAR = target/{PREENCHER}-0.0.1-SNAPSHOT.jar
-PROJECT_GROUP    = {PREENCHER}
-JADE_AGENTS      = {PREENCHER}:$(PROJECT_GROUP).App($(QUORUM));
+PATH_PROJECT_JAR = target/specialist_delegation-0.0.1-SNAPSHOT.jar
+PROJECT_GROUP    = specialist_delegation
+JADE_AGENTS      = specialist_delegation:$(PROJECT_GROUP).App($(QUORUM));
 JADE_FLAGS 		 = -gui -jade_domain_df_maxresult $(DF_MAX_RESULT) -agents "$(JADE_AGENTS)"
 
 .PHONY:

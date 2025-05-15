@@ -1,8 +1,9 @@
 QUORUM ?= 3
+SPECS ?= 1
 DF_MAX_RESULT := $(shell expr $(QUORUM) + 5)
 PATH_PROJECT_JAR = target/specialist_delegation-0.0.1-SNAPSHOT.jar
 PROJECT_GROUP    = specialist_delegation
-JADE_AGENTS      = specialist_delegation:$(PROJECT_GROUP).App($(QUORUM));
+JADE_AGENTS      = specialist_delegation:$(PROJECT_GROUP).App($(QUORUM), $(SPECS));
 JADE_FLAGS 		 = -gui -jade_domain_df_maxresult $(DF_MAX_RESULT) -agents "$(JADE_AGENTS)"
 
 .PHONY:
@@ -41,3 +42,5 @@ help:
 	@echo ""
 	@echo "If wanted it's possible to change the quantity of agents by adding the variable QUORUM to the command, as seen in the next line"
 	@echo "	$$ make build-and-run QUORUM=<Quantity of agents>"
+	@echo "It's also possible to change the number of specialities of each agent by adding the variable SPECS to the command, as seen in the next line"
+	@echo "	$$ make build-and-run SPECS=<Quantity of specialities>"

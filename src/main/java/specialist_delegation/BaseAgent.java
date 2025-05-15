@@ -54,6 +54,9 @@ public abstract class BaseAgent extends Agent {
 	public static final String ANSI_WHITE = "\u001B[37m";
 
 	protected static final Random rand = new Random();
+	protected static final int MIN_PROFICIENCE = 1;
+	protected static final int MAX_PROFICIENCE = 5;
+	protected static int specialities_qt = 1;
 
 	protected int dataSize;
 

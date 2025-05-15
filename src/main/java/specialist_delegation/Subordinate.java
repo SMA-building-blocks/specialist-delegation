@@ -1,6 +1,8 @@
 package specialist_delegation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -18,13 +20,43 @@ public class Subordinate extends BaseAgent {
 	private static final long serialVersionUID = 1L;
 	private Strategy strategyOp;
 
+	private Map<String, Integer> agentSpeciality = new HashMap<>();
+
+
 	@Override
 	protected void setup() {
 
 		logger.log(Level.INFO, "I'm the subordinate!");
 		this.registerDF(this, "Subordinate", "subordinate");
 
+		
+		registerSpecialities();
+
 		addBehaviour(handleMessages());
+	}
+
+	private void registerSpecialities() {
+		Object[] args = getArguments();
+
+		if (args != null && args.length > 0) {
+			int binaryCounter = 0;
+			int proficiency = 0;
+			String specArea = "speciality";
+
+			for ( int i = 0; i < args.length; ++i ) {
+				if ( binaryCounter == 0 ) {
+					specArea = args[i].toString();
+				} else {
+					proficiency = Integer.parseInt(args[i].toString());
+
+					agentSpeciality.put(specArea, proficiency);
+					this.registerDF(this, specArea, specArea);
+				}
+				binaryCounter = 1 - binaryCounter;
+			}
+		}
+
+		
 	}
 
 	@Override

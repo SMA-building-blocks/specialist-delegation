@@ -2,6 +2,7 @@ package specialist_delegation;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.logging.Level;
 
 import jade.lang.acl.ACLMessage;
@@ -32,6 +33,7 @@ public class App extends BaseAgent {
 		int workersQuorum = 0;
 		if (args != null && args.length > 0) {
 			workersQuorum = Integer.parseInt(args[0].toString());
+			specialities_qt = Math.min(Integer.parseInt(args[1].toString()), originalOperations.size());
 		}
 
 		for (int i = 0; i < workersQuorum; ++i)
@@ -42,7 +44,7 @@ public class App extends BaseAgent {
 			AgentContainer container = getContainerController(); // get a container controller for creating
 
 			workersName.forEach(worker -> {
-				this.launchAgent(worker, "specialist_delegation.Subordinate", null);
+				this.launchAgent(worker, "specialist_delegation.Subordinate", generateSpeciality(specialities_qt));
 				logger.log(Level.INFO, String.format("%s CREATED AND STARTED NEW WORKER: %s ON CONTAINER %s",
 						getLocalName(), worker, container.getName()));
 			});
@@ -101,5 +103,18 @@ public class App extends BaseAgent {
 		}
 
 		return newData.toString().trim();
+	}
+
+	private Object [] generateSpeciality(int specQuant) {
+		Object [] specs = new Object[2 * specQuant];
+
+		Collections.shuffle(originalOperations);
+		for ( int i = 0; i < specQuant; ++i ) {
+			specs[2 * i] = originalOperations.get(i);
+
+			specs[(2 * i) + 1] = rand.nextInt(MIN_PROFICIENCE, MAX_PROFICIENCE + 1);
+		}
+
+		return specs;
 	}
 }

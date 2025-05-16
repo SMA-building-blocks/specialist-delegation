@@ -2,8 +2,8 @@ package specialist_delegation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 
 import jade.core.behaviours.OneShotBehaviour;
@@ -14,8 +14,7 @@ public class Manager extends BaseAgent {
 
 	private static final long serialVersionUID = 1L;
 
-	private Queue<String> operations;
-	private ArrayList<Double> workload = new ArrayList<>();
+	private static List<String>  operations = Collections.synchronizedList(new ArrayList<>());
 
 	@Override
 	protected void setup() {
@@ -33,9 +32,10 @@ public class Manager extends BaseAgent {
 			public void action() {
 				if (msg.getContent().startsWith(START) && msg.getContent().contains(DATA)) {
 					logger.log(Level.INFO, String.format("%s MANAGER AGENT RECEIVED A START!", getLocalName()));
-					workload = parseData(msg);
+					workingData.clear();
+					workingData = parseData(msg);
 
-					operations = new LinkedList<>(originalOperations);
+					operations = Collections.synchronizedList(new ArrayList<>(originalOperations));
 
 					for ( String opp : operations ) {
 						searchSubordinatesByOperation(msg, opp);
@@ -56,11 +56,6 @@ public class Manager extends BaseAgent {
 					int ansPerformative = ACLMessage.INFORM;
 					String ansContent = THANKS;
 
-					if ( !operations.isEmpty() ) {
-						ansPerformative = ACLMessage.REQUEST;
-						ansContent = String.format("%s %s %d %s", operations.remove(), DATA, workingData.size(), prepareSendingData(workingData));
-					}
-
 					sendMessage(msg.getSender().getLocalName(), ansPerformative, ansContent);
 				} else if (msg.getContent().startsWith("CREATED")) {
 					String [] splittedMsg = msg.getContent().split(" ");
@@ -71,6 +66,49 @@ public class Manager extends BaseAgent {
 							String.format("%s %s %s", getLocalName(), UNEXPECTED_MSG,
 									msg.getSender().getLocalName()));
 				}
+			}
+		};
+	}
+
+	protected OneShotBehaviour handleCfp(ACLMessage msg) {
+		return new OneShotBehaviour(this) {
+			private static final long serialVersionUID = 1L;
+
+			public void action() {
+				if ( msg.getPerformative() == ACLMessage.PROPOSE ) {
+					if (msg.getContent().startsWith("PROFICIENCE")) {
+						String [] splittedMsg = msg.getContent().split(" ");
+						String recvPerfOpp = splittedMsg[1];
+
+						/*
+						 * Aqui deve ser feita a verificação do 
+						 * THRESHOLD de Proficiência
+						 */
+
+						ACLMessage replyMsg = msg.createReply();
+						if ( operations.contains(recvPerfOpp) ) {
+
+							dataSize = workingData.size();
+							String msgContentData = String.format("%s %d %s", DATA, workingData.size(), prepareSendingData(workingData));
+
+							replyMsg.setContent(String.format("%s %s", recvPerfOpp, msgContentData));
+							replyMsg.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+							
+							operations.remove(recvPerfOpp);
+
+							logger.log(Level.INFO, String.format("%s SENT MESSAGE WITH WORKLOAD TO WORKER %s!", getLocalName(), msg.getSender().getLocalName()));
+						} else {
+							replyMsg.setContent("REJECTED");
+							replyMsg.setPerformative(ACLMessage.REJECT_PROPOSAL);
+
+							logger.log(Level.INFO, String.format("%s SENT REJECT MESSAGE TO WORKER %s!", getLocalName(), msg.getSender().getLocalName()));
+						}
+						send(replyMsg);
+
+						
+					}
+				}
+				
 			}
 		};
 	}

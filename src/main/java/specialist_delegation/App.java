@@ -157,13 +157,15 @@ public class App extends BaseAgent {
 			private static final long serialVersionUID = 1L;
 
 			public void action() {
-				System.out.println("Recebi uma check message: " + msg.getContent());
 				if ( msg.getContent().startsWith("CHECK") && waitingAgents.contains(msg.getSender().getLocalName()) ) {
 					String [] splittedMsg = msg.getContent().split(" ");
 
 					ArrayList<DFAgentDescription> foundAgent = new ArrayList<>(Arrays.asList(searchAgentByType("Manager")));
 					sendMessage(foundAgent.get(0).getName().getLocalName(), ACLMessage.INFORM, 
 						String.format("%s %s", "CREATED", splittedMsg[1]));
+
+					logger.log(Level.INFO, String.format("%s RECEIVED A CHECK MESSAGE FROM AGENT %s WITH OPERATION %s",
+								getLocalName(), msg.getSender().getLocalName(), splittedMsg[1]));	
 
 					waitingAgents.remove(msg.getSender().getLocalName());
 				}

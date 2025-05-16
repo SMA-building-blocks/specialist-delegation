@@ -85,6 +85,12 @@ public abstract class BaseAgent extends Agent {
 						case ACLMessage.REQUEST:
 							addBehaviour(handleRequest(msg));
 							break;
+						case ACLMessage.CFP:
+						case ACLMessage.PROPOSE:
+						case ACLMessage.ACCEPT_PROPOSAL:
+						case ACLMessage.REJECT_PROPOSAL:
+							addBehaviour(handleCfp(msg));
+							break;
 						default:
 							logger.log(Level.INFO,
 									String.format("%s RECEIVED UNEXPECTED MESSAGE PERFORMATIVE FROM %s", getLocalName(),
@@ -110,6 +116,20 @@ public abstract class BaseAgent extends Agent {
 	}
 
 	protected OneShotBehaviour handleRequest(ACLMessage msg) {
+		return new OneShotBehaviour(this) {
+			private static final long serialVersionUID = 1L;
+
+			public void action() {
+				/*
+				 * TO-DO:
+				 * IMPLEMENT THIS METHOD BEHAVIOUR ON CONCRETE CLASS
+				 */
+				msg.createReply();
+			}
+		};
+	}
+
+	protected OneShotBehaviour handleCfp(ACLMessage msg) {
 		return new OneShotBehaviour(this) {
 			private static final long serialVersionUID = 1L;
 

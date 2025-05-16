@@ -2,7 +2,6 @@ package specialist_delegation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
@@ -16,6 +15,7 @@ public class Manager extends BaseAgent {
 	private static final long serialVersionUID = 1L;
 
 	private Queue<String> operations;
+	private ArrayList<Double> workload = new ArrayList<>();
 
 	@Override
 	protected void setup() {
@@ -33,26 +33,15 @@ public class Manager extends BaseAgent {
 			public void action() {
 				if (msg.getContent().startsWith(START) && msg.getContent().contains(DATA)) {
 					logger.log(Level.INFO, String.format("%s MANAGER AGENT RECEIVED A START!", getLocalName()));
-					workingData.clear();
-					workingData = parseData(msg);
-					dataSize = workingData.size();
+					workload = parseData(msg);
 
-					Collections.shuffle(originalOperations);
 					operations = new LinkedList<>(originalOperations);
 
-					String msgContentData = String.format("%s %d %s", DATA, workingData.size(), prepareSendingData(workingData));
+					for ( String opp : operations ) {
+						searchSubordinatesByOperation(msg, opp);
+					}
 
-					ArrayList<DFAgentDescription> foundWorkers = new ArrayList<>(
-							Arrays.asList(searchAgentByType("subordinate")));
-
-					Collections.shuffle(foundWorkers);
-
-					foundWorkers.forEach(ag -> {
-						sendMessage(ag.getName().getLocalName(), ACLMessage.REQUEST,
-								String.format("%s %s", operations.remove(), msgContentData));
-					});
-
-					logger.log(Level.INFO, String.format("%s SENT START MESSAGE TO WORKERS!", getLocalName()));
+					logger.log(Level.INFO, String.format("%s SENT CFP MESSAGE TO WORKERS!", getLocalName()));
 				} else if (msg.getContent().startsWith(THANKS)) {
 					logger.log(Level.INFO, String.format("%s RECEIVED THANKS FROM %s!", 
 						getLocalName(), msg.getSender().getLocalName()));
@@ -73,6 +62,10 @@ public class Manager extends BaseAgent {
 					}
 
 					sendMessage(msg.getSender().getLocalName(), ansPerformative, ansContent);
+				} else if (msg.getContent().startsWith("CREATED")) {
+					String [] splittedMsg = msg.getContent().split(" ");
+
+					searchSubordinatesByOperation(msg, splittedMsg[1]);
 				} else {
 					logger.log(Level.INFO,
 							String.format("%s %s %s", getLocalName(), UNEXPECTED_MSG,
@@ -80,6 +73,24 @@ public class Manager extends BaseAgent {
 				}
 			}
 		};
+	}
+
+	private void searchSubordinatesByOperation(ACLMessage msg, String opp) {
+		ArrayList<DFAgentDescription> foundWorkers = new ArrayList<>(
+			Arrays.asList(searchAgentByType(opp)));
+
+		if ( foundWorkers.isEmpty() ) {
+			ACLMessage reqAgentMsg = msg.createReply();
+			reqAgentMsg.setPerformative(ACLMessage.REQUEST);
+			reqAgentMsg.setContent(String.format("%s %s", "CREATE", opp));
+			send(reqAgentMsg);
+			return;
+		}
+
+		foundWorkers.forEach(ag -> {
+			sendMessage(ag.getName().getLocalName(), ACLMessage.CFP,
+					String.format("%s %s", "PROFICIENCE", opp));
+		});
 	}
 
 	private String prepareSendingData (ArrayList<Double> inputWorkingData) {

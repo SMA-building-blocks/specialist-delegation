@@ -1,12 +1,14 @@
 package specialist_delegation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import jade.core.behaviours.OneShotBehaviour;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import specialist_delegation.strategies.AverageStrategy;
 import specialist_delegation.strategies.MedianStrategy;
@@ -22,17 +24,23 @@ public class Subordinate extends BaseAgent {
 
 	private Map<String, Integer> agentSpeciality = new HashMap<>();
 
-
 	@Override
 	protected void setup() {
+		addBehaviour(handleMessages());
 
 		logger.log(Level.INFO, "I'm the subordinate!");
 		this.registerDF(this, "Subordinate", "subordinate");
-
 		
 		registerSpecialities();
+		
+		ArrayList<DFAgentDescription> foundAgent = new ArrayList<>(
+			Arrays.asList(searchAgentByType("Creator")));
 
-		addBehaviour(handleMessages());
+		StringBuilder strBld = new StringBuilder();
+		agentSpeciality.keySet().forEach(el -> 
+			strBld.append(String.format("%s ", el))
+		);
+		sendMessage(foundAgent.get(0).getName().getLocalName(), ACLMessage.INFORM, String.format("%s %s", "CHECK", strBld.toString().trim()));
 	}
 
 	private void registerSpecialities() {
@@ -55,6 +63,7 @@ public class Subordinate extends BaseAgent {
 				binaryCounter = 1 - binaryCounter;
 			}
 		}
+
 
 		
 	}

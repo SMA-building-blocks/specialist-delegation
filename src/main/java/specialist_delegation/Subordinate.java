@@ -106,14 +106,15 @@ public class Subordinate extends BaseAgent {
 						
 					ACLMessage msg2 = msg.createReply();
 
-					if(!agentSpeciality.containsKey(reqOperation)){
+					if ( !agentSpeciality.containsKey(reqOperation) ) {
 					
-						msg2.setContent("OPERATION UNKNOWN");
-						msg2.setPerformative(ACLMessage.UNKNOWN);
+						String msgContent = String.format("OPERATION %s UNKNOWN", reqOperation);
+						msg2.setContent(msgContent);
+						msg2.setPerformative(ACLMessage.REFUSE);
 						logger.log(Level.INFO, String.format("%s SENT OPERATION UNKNOWN MESSAGE TO %s", getLocalName(),
 						msg.getSender().getLocalName()));
 					
-					}else{
+					} else {
 
 						workingData.clear();
 						workingData = parseData(msg);

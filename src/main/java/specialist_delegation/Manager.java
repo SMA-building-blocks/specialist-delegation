@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
+import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
@@ -22,6 +23,8 @@ public class Manager extends BaseAgent {
 		this.registerDF(this, "Manager", "manager");
 
 		addBehaviour(handleMessages());
+		
+		operations = Collections.synchronizedList(new ArrayList<>(originalOperations));
 	}
 
 	@Override
@@ -34,8 +37,6 @@ public class Manager extends BaseAgent {
 					logger.log(Level.INFO, String.format("%s MANAGER AGENT RECEIVED A START!", getLocalName()));
 					workingData.clear();
 					workingData = parseData(msg);
-
-					operations = Collections.synchronizedList(new ArrayList<>(originalOperations));
 
 					for ( String opp : operations ) {
 						searchSubordinatesByOperation(msg, opp);
@@ -113,15 +114,29 @@ public class Manager extends BaseAgent {
 		};
 	}
 
-	/*
-	 * TO-DO: create handler for unknown performative
-	 */
 	@Override
-	protected OneShotBehaviour handleUnk(ACLMessage msg){
+	protected OneShotBehaviour handleRefuse (ACLMessage msg) {
 		return new OneShotBehaviour(this){
 			private static final long serialVersionUID = 1L;
 
 			public void action() {
+
+				if ( msg.getContent().startsWith("OPERATION") ) {
+					String [] splittedMsg = msg.getContent().split(" ");
+
+					if ( !operations.contains(splittedMsg[1]) ) {
+						logger.log(Level.WARNING,
+							String.format("%s %s %s %s %s", ANSI_YELLOW, getLocalName(), ": OPERATION NOT NEEDED SENT FROM",
+									msg.getSender().getLocalName(), ANSI_RESET));
+					} else {
+						searchSubordinatesByOperation(msg, splittedMsg[1], msg.getSender());
+					}
+
+				} else {
+					logger.log(Level.INFO,
+							String.format("%s %s %s", getLocalName(), UNEXPECTED_MSG,
+									msg.getSender().getLocalName()));
+				}
 
 			}
 		};
@@ -142,6 +157,26 @@ public class Manager extends BaseAgent {
 		foundWorkers.forEach(ag -> {
 			sendMessage(ag.getName().getLocalName(), ACLMessage.CFP,
 					String.format("%s %s", "PROFICIENCE", opp));
+		});
+	}
+
+	private void searchSubordinatesByOperation(ACLMessage msg, String opp, AID notThisAgent) {
+		ArrayList<DFAgentDescription> foundWorkers = new ArrayList<>(
+			Arrays.asList(searchAgentByType(opp)));
+
+		if ( foundWorkers.isEmpty() ) {
+			ACLMessage reqAgentMsg = msg.createReply();
+			reqAgentMsg.setPerformative(ACLMessage.REQUEST);
+			reqAgentMsg.setContent(String.format("%s %s", "CREATE", opp));
+			send(reqAgentMsg);
+			return;
+		}
+
+		foundWorkers.forEach(ag -> {
+			if ( !ag.getName().equals(notThisAgent) ) {
+				sendMessage(ag.getName().getLocalName(), ACLMessage.CFP,
+						String.format("%s %s", "PROFICIENCE", opp));
+			}
 		});
 	}
 

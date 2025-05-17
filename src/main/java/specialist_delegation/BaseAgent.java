@@ -91,8 +91,8 @@ public abstract class BaseAgent extends Agent {
 						case ACLMessage.REJECT_PROPOSAL:
 							addBehaviour(handleCfp(msg));
 							break;
-						case ACLMessage.UNKNOWN:
-							addBehaviour(handleUnk(msg));
+						case ACLMessage.REFUSE:
+							addBehaviour(handleRefuse(msg));
 							break;
 						default:
 							logger.log(Level.INFO,
@@ -146,7 +146,7 @@ public abstract class BaseAgent extends Agent {
 		};
 	}
 
-	protected OneShotBehaviour handleUnk(ACLMessage msg) {
+	protected OneShotBehaviour handleRefuse(ACLMessage msg) {
 		return new OneShotBehaviour(this) {
 			private static final long serialVersionUID = 1L;
 

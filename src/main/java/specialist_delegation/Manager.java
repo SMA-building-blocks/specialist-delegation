@@ -69,7 +69,7 @@ public class Manager extends BaseAgent {
 			}
 		};
 	}
-
+	@Override
 	protected OneShotBehaviour handleCfp(ACLMessage msg) {
 		return new OneShotBehaviour(this) {
 			private static final long serialVersionUID = 1L;
@@ -109,6 +109,20 @@ public class Manager extends BaseAgent {
 					}
 				}
 				
+			}
+		};
+	}
+
+	/*
+	 * TO-DO: create handler for unknown performative
+	 */
+	@Override
+	protected OneShotBehaviour handleUnk(ACLMessage msg){
+		return new OneShotBehaviour(this){
+			private static final long serialVersionUID = 1L;
+
+			public void action() {
+
 			}
 		};
 	}

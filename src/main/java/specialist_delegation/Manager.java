@@ -8,7 +8,9 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import jade.core.AID;
+import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.WakerBehaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 
@@ -25,6 +27,11 @@ public class Manager extends BaseAgent {
 		this.registerDF(this, "Manager", "manager");
 
 		addBehaviour(handleMessages());
+
+		System.out.println("A MIMIR...");
+
+		// remove this
+		addBehaviour(timeOutBehaviour(null, this, 4000));
 		
 	}
 	
@@ -157,6 +164,17 @@ public class Manager extends BaseAgent {
 									msg.getSender().getLocalName()));
 				}
 
+			}
+		};
+	}
+
+	protected WakerBehaviour timeOutBehaviour(ACLMessage msg, Agent ag, long timeOut) {
+		return new WakerBehaviour(ag, timeOut) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void onWake(){
+				System.out.println("ACORDEII!");;
 			}
 		};
 	}

@@ -32,6 +32,7 @@ public abstract class BaseAgent extends Agent {
 	public static final String INFORM = "INFORM";
 	public static final String UNEXPECTED_MSG = "RECEIVED AN UNEXPECTED MESSAGE FROM";
 	public static final String DATA = "DATA";
+	public static final String PROFICIENCE = "PROFICIENCE";
 
 	// available operations
 	public static final String AVERAGE = "AVERAGE";

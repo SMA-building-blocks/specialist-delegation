@@ -32,7 +32,7 @@ public class Subordinate extends BaseAgent {
 		this.registerDF(this, "Subordinate", "subordinate");
 		
 		registerSpecialities();
-		
+
 		ArrayList<DFAgentDescription> foundAgent = new ArrayList<>(
 			Arrays.asList(searchAgentByType("Creator")));
 
@@ -89,11 +89,11 @@ public class Subordinate extends BaseAgent {
 
 			public void action() {
 				if ( msg.getPerformative() == ACLMessage.CFP ) {
-					if (msg.getContent().startsWith("PROFICIENCE")) {
+					if (msg.getContent().startsWith(PROFICIENCE)) {
 						String [] splittedMsg = msg.getContent().split(" ");
 
 						ACLMessage replyMsg = msg.createReply();
-						replyMsg.setContent(String.format("PROFICIENCE %s %d", splittedMsg[1], (agentSpeciality.get(splittedMsg[1])== null? 0 :agentSpeciality.get(splittedMsg[1]))));
+						replyMsg.setContent(String.format("%s %s %d", PROFICIENCE, splittedMsg[1], (agentSpeciality.get(splittedMsg[1])== null? 0 :agentSpeciality.get(splittedMsg[1]))));
 						replyMsg.setPerformative(ACLMessage.PROPOSE);
 						send(replyMsg);
 					} else {
@@ -105,6 +105,7 @@ public class Subordinate extends BaseAgent {
 					String reqOperation = msg.getContent().split(" ")[0];
 						
 					ACLMessage msg2 = msg.createReply();
+					boolean strategySet = true;
 
 					if ( !agentSpeciality.containsKey(reqOperation) ) {
 					
@@ -141,24 +142,32 @@ public class Subordinate extends BaseAgent {
 								break;
 							default:
 								logger.log(Level.INFO,
+								
 								String.format("%s %s %s", getLocalName(), UNEXPECTED_MSG,
-								msg.getSender().getLocalName()));
-								break;
+									msg.getSender().getLocalName()));
+								
+								String msgContent = String.format("OPERATION %s UNKNOWN", reqOperation);
+								msg2.setContent(msgContent);
+								msg2.setPerformative(ACLMessage.REFUSE);
+								logger.log(Level.INFO, String.format("%s SENT OPERATION UNKNOWN MESSAGE TO %s", getLocalName(),
+									msg.getSender().getLocalName()));
+								strategySet = false;
 						}
-						/*
-						 * need to do an verification if the strategy was defined
-						 */
-						ArrayList<Double> objRet = strategyOp.executeOperation(workingData);
-						String strRet = objRet.stream().map(val -> String.format("%s", Double.toString(val))).collect(Collectors.joining(" ")).trim();
 						
-						logger.log(Level.INFO, String.format("%s I'm %s and I performed %s on data, resulting on: %s %s", ANSI_GREEN, 
-						getLocalName(), reqOperation, strRet, ANSI_RESET));
-						
-						msg2.setPerformative(ACLMessage.INFORM);
-						msg2.setContent(String.format("%s %s %s %d %s", INFORM, reqOperation, DATA, objRet.size(), strRet));
-						
-						logger.log(Level.INFO, String.format("%s SENT RETURN DATA MESSAGE TO %s", getLocalName(),
-						msg.getSender().getLocalName()));
+						if (strategySet) {
+							ArrayList<Double> objRet = strategyOp.executeOperation(workingData);
+							String strRet = objRet.stream().map(val -> String.format("%s", Double.toString(val)))
+								.collect(Collectors.joining(" ")).trim();
+							
+							logger.log(Level.INFO, String.format("%s I'm %s and I performed %s on data, resulting on: %s %s", ANSI_GREEN, 
+								getLocalName(), reqOperation, strRet, ANSI_RESET));
+							
+							msg2.setPerformative(ACLMessage.INFORM);
+							msg2.setContent(String.format("%s %s %s %d %s", INFORM, reqOperation, DATA, objRet.size(), strRet));
+							
+							logger.log(Level.INFO, String.format("%s SENT RETURN DATA MESSAGE TO %s", getLocalName(),
+								msg.getSender().getLocalName()));
+						}
 					}
 					send(msg2);
 				}

@@ -162,7 +162,7 @@ public class App extends BaseAgent {
 
 					ArrayList<DFAgentDescription> foundAgent = new ArrayList<>(Arrays.asList(searchAgentByType("Manager")));
 					sendMessage(foundAgent.get(0).getName().getLocalName(), ACLMessage.INFORM, 
-						String.format("%s %s", "CREATED", splittedMsg[1]));
+						String.format("%s %s %s", "CREATED", splittedMsg[1], msg.getSender().getLocalName()));
 
 					logger.log(Level.INFO, String.format("%s RECEIVED A CHECK MESSAGE FROM AGENT %s WITH OPERATION %s",
 								getLocalName(), msg.getSender().getLocalName(), splittedMsg[1]));	

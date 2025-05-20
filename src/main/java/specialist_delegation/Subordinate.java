@@ -28,7 +28,7 @@ public class Subordinate extends BaseAgent {
 	protected void setup() {
 		addBehaviour(handleMessages());
 
-		logger.log(Level.INFO, "I'm the subordinate!");
+		logger.log(Level.INFO, String.format("I'm the %s!", getLocalName()));
 		this.registerDF(this, "Subordinate", "subordinate");
 		
 		registerSpecialities();

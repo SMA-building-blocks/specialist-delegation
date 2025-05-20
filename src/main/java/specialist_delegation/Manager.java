@@ -65,7 +65,17 @@ public class Manager extends BaseAgent {
 				} else if (msg.getContent().startsWith("CREATED")) {
 					String [] splittedMsg = msg.getContent().split(" ");
 
-					searchSubordinatesByOperation(msg, splittedMsg[1]);
+					String agentName = msg.getContent().substring(msg.getContent().indexOf(splittedMsg[2], 0));
+
+					if (operationsRequested.get(splittedMsg[1]) == null){
+						operationsRequested.put(splittedMsg[1], new ArrayList<AID>(Arrays.asList(new AID(agentName, true))));
+					} else {
+						operationsRequested.put(splittedMsg[1],operationsRequested.get(splittedMsg[1]) );
+					}
+
+					sendMessage(new AID(agentName, AID.ISLOCALNAME).getLocalName(), ACLMessage.CFP,
+						String.format("%s %s", PROFICIENCE, splittedMsg[1]));
+
 				} else {
 					logger.log(Level.INFO,
 							String.format("%s %s %s", getLocalName(), UNEXPECTED_MSG,
@@ -98,20 +108,24 @@ public class Manager extends BaseAgent {
 							replyMsg.setContent(String.format("%s %s", recvPerfOpp, msgContentData));
 							replyMsg.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 
+							send(replyMsg);
+
 							logger.log(Level.INFO, String.format("%s SENT MESSAGE WITH WORKLOAD TO WORKER %s!", getLocalName(), msg.getSender().getLocalName()));
 						} else if (!operations.keySet().contains(recvPerfOpp)){
 							replyMsg.setContent("REJECTED");
 							replyMsg.setPerformative(ACLMessage.REJECT_PROPOSAL);
+							
+							send(replyMsg);
 
 							logger.log(Level.INFO, String.format("%s SENT REJECT MESSAGE TO WORKER %s!", getLocalName(), msg.getSender().getLocalName()));
-						} else if (operationsRequested.get(recvPerfOpp).isEmpty()) {
+						} else if (operationsRequested.get(recvPerfOpp).isEmpty() && operations.containsKey(recvPerfOpp)) {
 							ACLMessage reqAgentMsg = new ACLMessage(ACLMessage.REQUEST);
 							reqAgentMsg.setContent(String.format("%s %s", "CREATE", recvPerfOpp));
 							reqAgentMsg.addReceiver(searchAgentByType("Creator")[0].getName());
 							send(reqAgentMsg);
-							searchAgentByType(recvPerfOpp);
+							//searchAgentByType(recvPerfOpp);
 						}
-						send(replyMsg);
+						
 					}
 				}
 				

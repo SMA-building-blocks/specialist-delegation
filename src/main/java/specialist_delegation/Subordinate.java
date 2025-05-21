@@ -38,7 +38,7 @@ public class Subordinate extends BaseAgent {
 		registerServices();
 
 		ArrayList<DFAgentDescription> foundAgent = new ArrayList<>(
-			Arrays.asList(searchAgentByType("Creator")));
+			Arrays.asList(searchAgentByType(CREATOR)));
 
 		StringBuilder strBld = new StringBuilder();
 		agentSpeciality.keySet().forEach(el -> 

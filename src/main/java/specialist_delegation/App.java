@@ -27,7 +27,7 @@ public class App extends BaseAgent {
 
 		loggerSetup();
 
-		registerDF(this, "Creator", "creator");
+		registerDF(this, CREATOR, CREATOR);
 		addBehaviour(handleMessages());
 
 		logger.log(Level.INFO, "Starting Agents...");
@@ -129,7 +129,7 @@ public class App extends BaseAgent {
 			private static final long serialVersionUID = 1L;
 
 			public void action() {
-				if (msg.getContent().startsWith("CREATE")) {
+				if (msg.getContent().startsWith(CREATE)) {
 					String [] splittedMsg = msg.getContent().split(" ");
 
 					try {

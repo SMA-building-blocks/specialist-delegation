@@ -34,7 +34,8 @@ public abstract class BaseAgent extends Agent {
 	public static final String UNEXPECTED_MSG = "RECEIVED AN UNEXPECTED MESSAGE FROM";
 	public static final String DATA = "DATA";
 	public static final String PROFICIENCE = "PROFICIENCE";
-
+	public static final String CREATE = "CREATE";
+	public static final String CREATOR = "Creator";
 	// available operations
 	public static final String AVERAGE = "AVERAGE";
 	public static final String MODE = "MODE";

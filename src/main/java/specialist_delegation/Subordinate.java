@@ -20,7 +20,7 @@ import specialist_delegation.strategies.Strategy;
 public class Subordinate extends BaseAgent {
 
 	private static final long serialVersionUID = 1L;
-	private Strategy strategyOp;
+	private transient Strategy strategyOp;
 
 	private Map<String, Integer> agentSpeciality = new HashMap<>();
 

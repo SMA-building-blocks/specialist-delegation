@@ -1,9 +1,10 @@
 QUORUM ?= 3
 SPECS ?= 1
+MALFUNCTION ?= 0
 DF_MAX_RESULT := $(shell expr $(QUORUM) + 5)
 PATH_PROJECT_JAR = target/specialist_delegation-0.0.1-SNAPSHOT.jar
 PROJECT_GROUP    = specialist_delegation
-JADE_AGENTS      = specialist_delegation:$(PROJECT_GROUP).App($(QUORUM), $(SPECS));
+JADE_AGENTS      = specialist_delegation:$(PROJECT_GROUP).App($(QUORUM), $(SPECS), $(MALFUNCTION));
 JADE_FLAGS 		 = -gui -jade_domain_df_maxresult $(DF_MAX_RESULT) -agents "$(JADE_AGENTS)"
 
 .PHONY:
@@ -44,3 +45,5 @@ help:
 	@echo "	$$ make build-and-run QUORUM=<Quantity of agents>"
 	@echo "It's also possible to change the number of specialities of each agent by adding the variable SPECS to the command, as seen in the next line"
 	@echo "	$$ make build-and-run SPECS=<Quantity of specialities>"
+	@echo "It's possible to activate a random agent malfunction to test timeout more effectively, as seen in the next line"
+	@echo "	$$ make build-and-run MALFUNCTION=1"

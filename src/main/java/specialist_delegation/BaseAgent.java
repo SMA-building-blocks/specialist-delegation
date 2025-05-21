@@ -12,6 +12,7 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.WakerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -64,6 +65,10 @@ public abstract class BaseAgent extends Agent {
 	protected ArrayList<Double> workingData = new ArrayList<>();
 
 	protected static final Logger logger = Logger.getLogger(BaseAgent.class.getName());
+
+	protected static final Long TIMEOUT_LIMIT = 1000L;
+	protected static boolean RANDOM_AGENT_MALFUNCTION = true;
+	protected boolean brokenAgent = false;
 
 	@Override
 	protected void setup() {
@@ -161,6 +166,24 @@ public abstract class BaseAgent extends Agent {
 		};
 	}
 
+	protected WakerBehaviour timeoutBehaviour(AID requestedAgent, String requestedOperation, long timeout) {
+		return new WakerBehaviour (this, timeout) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void onWake(){
+				/*
+				 * TO-DO:
+				 * IMPLEMENT THIS METHOD BEHAVIOUR ON CONCRETE CLASS
+				 */
+				ACLMessage newMessage = new ACLMessage(ACLMessage.SUBSCRIBE);
+				newMessage.addReceiver(requestedAgent);
+				newMessage.setContent(String.format("%l", timeout));
+				send(newMessage);
+			}
+		};
+	}
+	
 	protected void registerDF(Agent regAgent, String sdName, String sdType) {
 		try {
 			DFAgentDescription dfd = new DFAgentDescription();
@@ -179,6 +202,34 @@ public abstract class BaseAgent extends Agent {
 			} else {
 				found[0].addServices(sd);
 				DFService.modify(regAgent, found[0]);
+			}
+
+			logger.log(Level.INFO, String.format("%s REGISTERED WITH THE DF", getLocalName()));
+		} catch (FIPAException e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected void registerDF(Agent regAgent, ArrayList<String> specs) {
+		try {
+			DFAgentDescription dfd = new DFAgentDescription();
+			dfd.setName(getAID());
+
+			for ( String specsInfo : specs ) {
+				ServiceDescription sd = new ServiceDescription();
+				sd.setType(specsInfo);
+				sd.setName(specsInfo);
+
+				DFAgentDescription[] found = DFService.search(this, dfd);
+
+				dfd.addServices(sd);
+
+				if (found.length == 0) {
+					DFService.register(regAgent, dfd);
+				} else {
+					found[0].addServices(sd);
+					DFService.modify(regAgent, found[0]);
+				}
 			}
 
 			logger.log(Level.INFO, String.format("%s REGISTERED WITH THE DF", getLocalName()));

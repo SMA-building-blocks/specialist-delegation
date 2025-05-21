@@ -28,10 +28,15 @@ public class Subordinate extends BaseAgent {
 	protected void setup() {
 		addBehaviour(handleMessages());
 
-		logger.log(Level.INFO, String.format("I'm the %s!", getLocalName()));
-		this.registerDF(this, "Subordinate", "subordinate");
+		if ( !RANDOM_AGENT_MALFUNCTION || rand.nextInt(11) != 10 ) {
+			logger.log(Level.INFO, String.format("I'm the %s!", getLocalName()));
+		} else {
+			brokenAgent = true;
+			logger.log(Level.WARNING,
+				String.format("%s I'm agent %s and I have a malfunction! %s", ANSI_CYAN, getLocalName(), ANSI_RESET));
+		}
 		
-		registerSpecialities();
+		registerServices();
 
 		ArrayList<DFAgentDescription> foundAgent = new ArrayList<>(
 			Arrays.asList(searchAgentByType("Creator")));
@@ -43,7 +48,7 @@ public class Subordinate extends BaseAgent {
 		sendMessage(foundAgent.get(0).getName().getLocalName(), ACLMessage.INFORM, String.format("%s %s", "CHECK", strBld.toString().trim()));
 	}
 
-	private void registerSpecialities() {
+	private void registerServices() {
 		Object[] args = getArguments();
 
 		if (args != null && args.length > 0) {
@@ -58,10 +63,14 @@ public class Subordinate extends BaseAgent {
 					proficiency = Integer.parseInt(args[i].toString());
 
 					agentSpeciality.put(specArea, proficiency);
-					this.registerDF(this, specArea, specArea);
 				}
 				binaryCounter = 1 - binaryCounter;
 			}
+
+			ArrayList<String> agServices = new ArrayList<>(agentSpeciality.keySet());
+			agServices.add("Subordinate");
+
+			registerDF(this, agServices);
 		}
 	}
 
@@ -77,7 +86,7 @@ public class Subordinate extends BaseAgent {
 				} else {
 					logger.log(Level.INFO,
 							String.format("%s RECEIVED AN UNEXPECTED MESSAGE FROM %s", getLocalName(),
-									msg.getSender().getLocalName()));
+								msg.getSender().getLocalName()));
 				}
 			}
 		};
@@ -99,9 +108,9 @@ public class Subordinate extends BaseAgent {
 					} else {
 						logger.log(Level.INFO,
 								String.format("%s RECEIVED AN UNEXPECTED MESSAGE FROM %s", getLocalName(),
-										msg.getSender().getLocalName()));
+									msg.getSender().getLocalName()));
 					}
-				} else if ( msg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL ) {
+				} else if ( !brokenAgent && msg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL ) {
 					String reqOperation = msg.getContent().split(" ")[0];
 						
 					ACLMessage msg2 = msg.createReply();

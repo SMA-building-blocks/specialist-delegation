@@ -27,8 +27,8 @@ public class Subordinate extends BaseAgent {
 	@Override
 	protected void setup() {
 		addBehaviour(handleMessages());
-
-		if ( !RANDOM_AGENT_MALFUNCTION || rand.nextInt(11) != 10 ) {
+		System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA " + randomAgentMalfunction);
+		if ( !randomAgentMalfunction || rand.nextInt(11) != 10 ) {
 			logger.log(Level.INFO, String.format("I'm the %s!", getLocalName()));
 		} else {
 			brokenAgent = true;

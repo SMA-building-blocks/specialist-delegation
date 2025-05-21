@@ -58,7 +58,7 @@ public abstract class BaseAgent extends Agent {
 	protected static final Random rand = new Random();
 	protected static final int MIN_PROFICIENCE = 1;
 	protected static final int MAX_PROFICIENCE = 5;
-	protected static int specialities_qt = 1;
+	protected static int specialitiesQt = 1;
 
 	protected int dataSize;
 
@@ -67,7 +67,7 @@ public abstract class BaseAgent extends Agent {
 	protected static final Logger logger = Logger.getLogger(BaseAgent.class.getName());
 
 	protected static final Long TIMEOUT_LIMIT = 1000L;
-	protected static boolean RANDOM_AGENT_MALFUNCTION = true;
+	protected static boolean randomAgentMalfunction = true;
 	protected boolean brokenAgent = false;
 
 	@Override
@@ -178,7 +178,7 @@ public abstract class BaseAgent extends Agent {
 				 */
 				ACLMessage newMessage = new ACLMessage(ACLMessage.SUBSCRIBE);
 				newMessage.addReceiver(requestedAgent);
-				newMessage.setContent(String.format("%l", timeout));
+				newMessage.setContent(String.format("%l %s", timeout, requestedOperation));
 				send(newMessage);
 			}
 		};

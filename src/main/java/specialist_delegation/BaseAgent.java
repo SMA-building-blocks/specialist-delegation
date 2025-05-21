@@ -34,7 +34,8 @@ public abstract class BaseAgent extends Agent {
 	public static final String UNEXPECTED_MSG = "RECEIVED AN UNEXPECTED MESSAGE FROM";
 	public static final String DATA = "DATA";
 	public static final String PROFICIENCE = "PROFICIENCE";
-
+	public static final String CREATE = "CREATE";
+	public static final String CREATOR = "Creator";
 	// available operations
 	public static final String AVERAGE = "AVERAGE";
 	public static final String MODE = "MODE";
@@ -58,7 +59,7 @@ public abstract class BaseAgent extends Agent {
 	protected static final Random rand = new Random();
 	protected static final int MIN_PROFICIENCE = 1;
 	protected static final int MAX_PROFICIENCE = 5;
-	protected static int specialities_qt = 1;
+	protected int specialitiesQt = 1;
 
 	protected int dataSize;
 
@@ -67,7 +68,7 @@ public abstract class BaseAgent extends Agent {
 	protected static final Logger logger = Logger.getLogger(BaseAgent.class.getName());
 
 	protected static final Long TIMEOUT_LIMIT = 1000L;
-	protected static boolean RANDOM_AGENT_MALFUNCTION = true;
+	protected static boolean randomAgentMalfunction = false;
 	protected boolean brokenAgent = false;
 
 	@Override
@@ -178,7 +179,7 @@ public abstract class BaseAgent extends Agent {
 				 */
 				ACLMessage newMessage = new ACLMessage(ACLMessage.SUBSCRIBE);
 				newMessage.addReceiver(requestedAgent);
-				newMessage.setContent(String.format("%l", timeout));
+				newMessage.setContent(String.format("%l %s", timeout, requestedOperation));
 				send(newMessage);
 			}
 		};

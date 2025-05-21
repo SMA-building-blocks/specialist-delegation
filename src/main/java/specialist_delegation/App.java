@@ -27,7 +27,7 @@ public class App extends BaseAgent {
 
 		loggerSetup();
 
-		registerDF(this, "Creator", "creator");
+		registerDF(this, CREATOR, CREATOR);
 		addBehaviour(handleMessages());
 
 		logger.log(Level.INFO, "Starting Agents...");
@@ -39,8 +39,8 @@ public class App extends BaseAgent {
 		Object[] args = getArguments();
 		if (args != null && args.length > 0) {
 			workersQuorum = Integer.parseInt(args[0].toString());
-			specialities_qt = Math.min(Integer.parseInt(args[1].toString()), originalOperations.size());
-			RANDOM_AGENT_MALFUNCTION = (Integer.parseInt(args[2].toString()) > 0);
+			specialitiesQt = Math.min(Integer.parseInt(args[1].toString()), originalOperations.size());
+			randomAgentMalfunction = (Integer.parseInt(args[2].toString()) > 0);
 		}
 
 		for (int i = 0; i < workersQuorum; ++i) workersName.add("subordinate_" + i);
@@ -49,7 +49,7 @@ public class App extends BaseAgent {
 			AgentContainer container = getContainerController();
 
 			workersName.forEach(worker -> {
-				this.launchAgent(worker, "specialist_delegation.Subordinate", generateSpeciality(specialities_qt));
+				this.launchAgent(worker, "specialist_delegation.Subordinate", generateSpeciality(specialitiesQt));
 				logger.log(Level.INFO, String.format("%s CREATED AND STARTED NEW WORKER: %s ON CONTAINER %s",
 						getLocalName(), worker, container.getName()));
 			});
@@ -129,7 +129,7 @@ public class App extends BaseAgent {
 			private static final long serialVersionUID = 1L;
 
 			public void action() {
-				if (msg.getContent().startsWith("CREATE")) {
+				if (msg.getContent().startsWith(CREATE)) {
 					String [] splittedMsg = msg.getContent().split(" ");
 
 					try {

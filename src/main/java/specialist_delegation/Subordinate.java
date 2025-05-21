@@ -20,15 +20,14 @@ import specialist_delegation.strategies.Strategy;
 public class Subordinate extends BaseAgent {
 
 	private static final long serialVersionUID = 1L;
-	private Strategy strategyOp;
+	private transient Strategy strategyOp;
 
 	private Map<String, Integer> agentSpeciality = new HashMap<>();
 
 	@Override
 	protected void setup() {
 		addBehaviour(handleMessages());
-
-		if ( !RANDOM_AGENT_MALFUNCTION || rand.nextInt(11) != 10 ) {
+		if ( !randomAgentMalfunction || rand.nextInt(11) != 10 ) {
 			logger.log(Level.INFO, String.format("I'm the %s!", getLocalName()));
 		} else {
 			brokenAgent = true;
@@ -39,7 +38,7 @@ public class Subordinate extends BaseAgent {
 		registerServices();
 
 		ArrayList<DFAgentDescription> foundAgent = new ArrayList<>(
-			Arrays.asList(searchAgentByType("Creator")));
+			Arrays.asList(searchAgentByType(CREATOR)));
 
 		StringBuilder strBld = new StringBuilder();
 		agentSpeciality.keySet().forEach(el -> 

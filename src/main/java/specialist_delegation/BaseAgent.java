@@ -58,7 +58,7 @@ public abstract class BaseAgent extends Agent {
 	protected static final Random rand = new Random();
 	protected static final int MIN_PROFICIENCE = 1;
 	protected static final int MAX_PROFICIENCE = 5;
-	protected static int specialitiesQt = 1;
+	protected int specialitiesQt = 1;
 
 	protected int dataSize;
 

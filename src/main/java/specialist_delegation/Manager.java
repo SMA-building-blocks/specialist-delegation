@@ -23,6 +23,7 @@ public class Manager extends BaseAgent {
 	private static Map<String, Integer>  operations = Collections.synchronizedMap(new HashMap<>());
 	private static Set<AID> timedOutAgents = Collections.synchronizedSet(new HashSet<AID>());
 	private static Map<String, ArrayList<AID>>  operationsRequested = Collections.synchronizedMap(new HashMap<>());
+	private static Set<String> operationsSent = Collections.synchronizedSet(new HashSet<String>());
 
 	@Override
 	protected void setup() {
@@ -60,6 +61,7 @@ public class Manager extends BaseAgent {
 
 					operations.remove(performedOp);
 					timedOutAgents.remove(msg.getSender());
+					operationsSent.remove(performedOp);
 
 					int ansPerformative = ACLMessage.INFORM;
 					String ansContent = THANKS;
@@ -101,7 +103,8 @@ public class Manager extends BaseAgent {
 
 						operationsRequested.get(recvPerfOpp).remove(msg.getSender());
 
-						if ( operations.keySet().contains(recvPerfOpp) && operations.get(recvPerfOpp) <= recvOppProficience) {
+						if ( operations.keySet().contains(recvPerfOpp) && operations.get(recvPerfOpp) <= recvOppProficience && !operationsSent.contains(recvPerfOpp)  ) {
+							operationsSent.add(recvPerfOpp);
 							
 							dataSize = workingData.size();
 							String msgContentData = String.format("%s %d %s", DATA, workingData.size(), prepareSendingData(workingData));
@@ -114,7 +117,6 @@ public class Manager extends BaseAgent {
 
 							addBehaviour(timeoutBehaviour(msg.getSender(), recvPerfOpp, TIMEOUT_LIMIT));
 
-
 							logger.log(Level.INFO, String.format("%s %s SENT MESSAGE WITH %s WORKLOAD TO WORKER %s! %s", ANSI_PURPLE, getLocalName(), recvPerfOpp, msg.getSender().getLocalName(), ANSI_RESET));
 						} else if (!operations.keySet().contains(recvPerfOpp)){
 							replyMsg.setContent("REJECTED");
@@ -125,7 +127,7 @@ public class Manager extends BaseAgent {
 							send(replyMsg);
 
 							logger.log(Level.INFO, String.format("%s SENT REJECT MESSAGE TO WORKER %s!", getLocalName(), msg.getSender().getLocalName()));
-						} else if (operationsRequested.get(recvPerfOpp).isEmpty() && operations.containsKey(recvPerfOpp)) {
+						} else if (operationsRequested.get(recvPerfOpp).isEmpty() && operations.containsKey(recvPerfOpp) && !operationsSent.contains(recvPerfOpp)) {
 							ACLMessage reqAgentMsg = new ACLMessage(ACLMessage.REQUEST);
 							reqAgentMsg.setContent(String.format("%s %s", "CREATE", recvPerfOpp));
 							reqAgentMsg.addReceiver(searchAgentByType("Creator")[0].getName());
@@ -174,6 +176,8 @@ public class Manager extends BaseAgent {
 				if ( operations.containsKey(requestedOperation) ) {
 					logger.log(Level.WARNING,
 						String.format("%s Agent %s timed out! %s", ANSI_YELLOW, requestedAgent.getLocalName(), ANSI_RESET));
+
+					operationsSent.remove(requestedOperation);
 
 					timedOutAgents.add(requestedAgent);
 					searchSubordinatesByOperation(requestedOperation, new ArrayList<AID>(timedOutAgents));

@@ -40,10 +40,10 @@ public class App extends BaseAgent {
 		if (args != null && args.length > 0) {
 			workersQuorum = Integer.parseInt(args[0].toString());
 			specialities_qt = Math.min(Integer.parseInt(args[1].toString()), originalOperations.size());
+			RANDOM_AGENT_MALFUNCTION = (Integer.parseInt(args[2].toString()) > 0);
 		}
 
-		for (int i = 0; i < workersQuorum; ++i)
-			workersName.add("subordinate_" + i);
+		for (int i = 0; i < workersQuorum; ++i) workersName.add("subordinate_" + i);
 
 		try {
 			AgentContainer container = getContainerController();

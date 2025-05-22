@@ -96,88 +96,116 @@ public class Subordinate extends BaseAgent {
 			private static final long serialVersionUID = 1L;
 
 			public void action() {
-				if ( msg.getPerformative() == ACLMessage.CFP ) {
-					if (msg.getContent().startsWith(PROFICIENCE)) {
-						String [] splittedMsg = msg.getContent().split(" ");
+				int recvPerformative = msg.getPerformative();
 
-						ACLMessage replyMsg = msg.createReply();
-						replyMsg.setContent(String.format("%s %s %d", PROFICIENCE, splittedMsg[1], (agentSpeciality.get(splittedMsg[1])== null? 0 :agentSpeciality.get(splittedMsg[1]))));
-						replyMsg.setPerformative(ACLMessage.PROPOSE);
-						send(replyMsg);
-					} else {
+				switch ( recvPerformative ) {
+					case ACLMessage.CFP:
+						receivedCfpHandler(msg);
+						break;
+					case ACLMessage.ACCEPT_PROPOSAL:
+						if ( !brokenAgent )
+							receivedAcceptedProposalHandler(msg);
+						break;
+					default:
 						logger.log(Level.INFO,
-								String.format("%s RECEIVED AN UNEXPECTED MESSAGE FROM %s", getLocalName(),
-									msg.getSender().getLocalName()));
-					}
-				} else if ( !brokenAgent && msg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL ) {
-					String reqOperation = msg.getContent().split(" ")[0];
-						
-					ACLMessage msg2 = msg.createReply();
-					boolean strategySet = true;
+							String.format("%s %s RECEIVED UNEXPECTED MESSAGE PERFORMATIVE FROM %s %s", ANSI_YELLOW, getLocalName(),
+									msg.getSender().getLocalName(), ANSI_RESET));
+				}
+			}
 
-					if ( !agentSpeciality.containsKey(reqOperation) ) {
+			private void receivedAcceptedProposalHandler(ACLMessage msg) {
+				String reqOperation = msg.getContent().split(" ")[0];
 					
-						String msgContent = String.format("OPERATION %s UNKNOWN", reqOperation);
-						msg2.setContent(msgContent);
-						msg2.setPerformative(ACLMessage.REFUSE);
-						logger.log(Level.INFO, String.format("%s SENT OPERATION UNKNOWN MESSAGE TO %s", getLocalName(),
+				ACLMessage msg2 = msg.createReply();
+				boolean strategySet = true;
+
+				if ( !agentSpeciality.containsKey(reqOperation) ) {
+				
+					String msgContent = String.format("OPERATION %s UNKNOWN", reqOperation);
+					msg2.setContent(msgContent);
+					msg2.setPerformative(ACLMessage.REFUSE);
+					logger.log(Level.INFO, String.format("%s SENT OPERATION UNKNOWN MESSAGE TO %s", getLocalName(),
 						msg.getSender().getLocalName()));
-					
-					} else {
+				
+				} else {
 
-						workingData.clear();
-						workingData = parseData(msg);
-						dataSize = workingData.size();
-	
-						logger.log(Level.INFO, String.format("%s AGENT RECEIVED A TASK (%s) AND DATA: %s!",
-								getLocalName(), reqOperation, workingData.toString()));
+					workingData.clear();
+					workingData = parseData(msg);
+					dataSize = workingData.size();
 
-						switch (reqOperation) {
-							case AVERAGE:
-								strategyOp = new AverageStrategy();
-								break;
-							case MEDIAN:
-								strategyOp = new MedianStrategy();
-								break;
-							case MODE:
-								strategyOp = new ModeStrategy();
-								break;
-							case STD_DEVIATION:
-								strategyOp = new StdDeviationStrategy();
-								break;
-							case SORT:
-								strategyOp = new SortStrategy();
-								break;
-							default:
-								logger.log(Level.INFO,
-								
-								String.format("%s %s %s", getLocalName(), UNEXPECTED_MSG,
-									msg.getSender().getLocalName()));
-								
-								String msgContent = String.format("OPERATION %s UNKNOWN", reqOperation);
-								msg2.setContent(msgContent);
-								msg2.setPerformative(ACLMessage.REFUSE);
-								logger.log(Level.INFO, String.format("%s SENT OPERATION UNKNOWN MESSAGE TO %s", getLocalName(),
-									msg.getSender().getLocalName()));
-								strategySet = false;
-						}
-						
-						if (strategySet) {
-							ArrayList<Double> objRet = strategyOp.executeOperation(workingData);
-							String strRet = objRet.stream().map(val -> String.format("%s", Double.toString(val)))
-								.collect(Collectors.joining(" ")).trim();
-							
-							logger.log(Level.INFO, String.format("%s I'm %s and I performed %s on data, resulting on: %s %s", ANSI_GREEN, 
-								getLocalName(), reqOperation, strRet, ANSI_RESET));
-							
-							msg2.setPerformative(ACLMessage.INFORM);
-							msg2.setContent(String.format("%s %s %s %d %s", INFORM, reqOperation, DATA, objRet.size(), strRet));
-							
-							logger.log(Level.INFO, String.format("%s SENT RETURN DATA MESSAGE TO %s", getLocalName(),
-								msg.getSender().getLocalName()));
-						}
+					logger.log(Level.INFO, String.format("%s AGENT RECEIVED A TASK (%s) AND DATA: %s!",
+							getLocalName(), reqOperation, workingData.toString()));
+
+					switch (reqOperation) {
+						case AVERAGE:
+							strategyOp = new AverageStrategy();
+							break;
+						case MEDIAN:
+							strategyOp = new MedianStrategy();
+							break;
+						case MODE:
+							strategyOp = new ModeStrategy();
+							break;
+						case STD_DEVIATION:
+							strategyOp = new StdDeviationStrategy();
+							break;
+						case SORT:
+							strategyOp = new SortStrategy();
+							break;
+						default:
+							strategySet = false;
 					}
-					send(msg2);
+					
+					msg2 = handleSetStrategy(msg, reqOperation, msg2, strategySet);
+				}
+				send(msg2);
+			}
+
+			private ACLMessage handleSetStrategy(ACLMessage msg, String reqOperation, ACLMessage msg2, boolean strategySet) {
+				if (strategySet) {
+					ArrayList<Double> objRet = strategyOp.executeOperation(workingData);
+					String strRet = objRet.stream().map(val -> String.format("%s", Double.toString(val)))
+						.collect(Collectors.joining(" ")).trim();
+					
+					logger.log(Level.INFO, String.format("%s I'm %s and I performed %s on data, resulting on: %s %s", ANSI_GREEN, 
+						getLocalName(), reqOperation, strRet, ANSI_RESET));
+					
+					msg2.setPerformative(ACLMessage.INFORM);
+					msg2.setContent(String.format("%s %s %s %d %s", INFORM, reqOperation, DATA, objRet.size(), strRet));
+					
+					logger.log(Level.INFO, String.format("%s SENT RETURN DATA MESSAGE TO %s", getLocalName(),
+						msg.getSender().getLocalName()));
+				} else {
+					logger.log(Level.INFO,
+						String.format("%s %s %s", getLocalName(), UNEXPECTED_MSG,
+							msg.getSender().getLocalName()));
+						
+					String msgContent = String.format("OPERATION %s UNKNOWN", reqOperation);
+					msg2.setContent(msgContent);
+					msg2.setPerformative(ACLMessage.REFUSE);
+					logger.log(Level.INFO, String.format("%s SENT OPERATION UNKNOWN MESSAGE TO %s", getLocalName(),
+						msg.getSender().getLocalName()));
+				}
+
+				return msg2;
+			}
+
+			private void receivedCfpHandler(ACLMessage msg) {
+				if (msg.getContent().startsWith(PROFICIENCE)) {
+					String [] splittedMsg = msg.getContent().split(" ");
+
+					ACLMessage replyMsg = msg.createReply();
+
+					int operationSpeciality = ( agentSpeciality.get(splittedMsg[1]) == null ? 0 : agentSpeciality.get(splittedMsg[1]));
+					String replyContent = String.format("%s %s %d", PROFICIENCE, splittedMsg[1], operationSpeciality);
+
+					replyMsg.setContent(replyContent);
+					replyMsg.setPerformative(ACLMessage.PROPOSE);
+					send(replyMsg);
+				} else {
+					logger.log(Level.INFO,
+							String.format("%s RECEIVED AN UNEXPECTED MESSAGE FROM %s", getLocalName(),
+								msg.getSender().getLocalName()));
 				}
 			}
 		};

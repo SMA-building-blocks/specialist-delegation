@@ -40,11 +40,37 @@ Recebidos todos os resultados das operações requisitadas, finaliza-se a execu�
 
 Além disso, há também a possibilidade de ativação durante a execução do *building block* da funcionalidade de *malfunctioning agents*, a qual permitirá que os agentes sejam randomicamente inutilizados, não retornando nenhuma resposta para as operações solicitadas. Esta funcionalidade permite o uso mais direto da lógica de *timeout* disponibilizada pela estrutura.
 
-### Projeto em Execução
+## Projeto em Execução
 
-<img src="" alt="Descrição do Print">
+Inicialmente, na *Figura 1*, é possível visualizar a partir do *sniffer* todos os agentes inicialmentes criados pelo *creator* (aqui nomeado por "*specialist-delegation*") para a realização das atividades do *building block*. Dentre estes, estão o agente *manager* e os agentes subordinados.
 
-*Figura 1: Print do Projeto em Execução*
+<img src="assets/figura1.png" alt="Visualização dos Agentes pelo *Sniffer*">
+
+*Figura 1: Visualização dos Agentes pelo *Sniffer**
+
+Logo em seguida, na *Figura 2*, é possível ver a mensagem enviada do *creator* para o *manager* solicitando a execução de todas as atividades em conjunto aos dados especificados.
+
+<img src="assets/figura2.png" alt="Mensagem de *Start* com os Dados Especificados">
+
+*Figura 2: Mensagem de *Start* com os Dados Especificados*
+
+Por conseguinte, na *Figura 3*, é possível ver o retorno de um agente subordinado ao *manager* com a proficiência de uma especialidade conforme requisição do mesmo.
+
+<img src="assets/figura3.png" alt="Mensagem com Informe de Proficiência de uma Especialidade">
+
+*Figura 3: Mensagem com Informe de Proficiência de uma Especialidade*
+
+Já na *Figura 4*, é possível ver a mensagem solicitando a criação de um agente com uma devida especialidade enviada pelo *manager* para o agente *creator*.
+
+<img src="assets/figura4.png" alt="Mensagem Solicitando a Criação de um Agente com uma Devida Especialidade">
+
+*Figura 4: Mensagem Solicitando a Criação de um Agente com uma Devida Especialidade*
+
+Por fim, na *Figura 5*, é possível ver o número de agentes subordinados criados para a devida aplicação de todas as operações sobre os dados recebidos pelo *manager*.
+
+<img src="assets/figura5.png" alt="Visualização de Todos os Agentes Após Aplicação de Todas as Operações">
+
+*Figura 5: Visualização de Todos os Agentes Após Aplicação de Todas as Operações*
 
 ## Requisitos Técnicos
 

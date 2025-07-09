@@ -16,7 +16,7 @@ import jade.wrapper.AgentController;
 /**
  * Class that set the main agent and it's actions
  */
-public class App extends BaseAgent {
+public class Creator extends BaseAgent {
 
 	private static final long serialVersionUID = 1L;
 	private static List<String>  waitingAgents = Collections.synchronizedList(new ArrayList<>());

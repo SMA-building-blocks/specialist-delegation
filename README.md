@@ -42,7 +42,7 @@ Além disso, há também a possibilidade de ativação durante a execução do *
 
 ## Projeto em Execução
 
-Inicialmente, na *Figura 1*, é possível visualizar a partir do *sniffer* todos os agentes inicialmentes criados pelo *creator* (aqui nomeado por "*specialist-delegation*") para a realização das atividades do *building block*. Dentre estes, estão o agente *manager* e os agentes subordinados.
+Inicialmente, na *Figura 1*, é possível visualizar a partir do *sniffer* todos os agentes inicialmentes criados pelo *creator* para a realização das atividades do *building block*. Dentre estes, estão o agente *manager* e os agentes subordinados.
 
 <img src="assets/figura1.png" alt="Visualização dos Agentes pelo *Sniffer*">
 

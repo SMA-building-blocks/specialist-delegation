@@ -42,7 +42,7 @@ Além disso, há também a possibilidade de ativação durante a execução do *
 
 ## Projeto em Execução
 
-Inicialmente, na *Figura 1*, é possível visualizar a partir do *sniffer* todos os agentes inicialmentes criados pelo *creator* (aqui nomeado por "*specialist-delegation*") para a realização das atividades do *building block*. Dentre estes, estão o agente *manager* e os agentes subordinados.
+Inicialmente, na *Figura 1*, é possível visualizar a partir do *sniffer* todos os agentes inicialmentes criados pelo *creator* para a realização das atividades do *building block*. Dentre estes, estão o agente *manager* e os agentes subordinados.
 
 <img src="assets/figura1.png" alt="Visualização dos Agentes pelo *Sniffer*">
 
@@ -74,7 +74,7 @@ Por fim, na *Figura 5*, é possível ver o número de agentes subordinados criad
 
 ## Requisitos Técnicos
 
-1. **Identificação de Agentes com a Devida Especialidade:** o agente *manager* deve ser capaz de encontrar e escolher agentes subordinados com a devida especialidade necessária para a delegação das atividades a serem realizadas;
+1. **Identificação de Agentes com a Devida Especialidade:** o agente *manager* deve ser capaz de encontrar e escolher agentes subordinados com a devida especialidade necessária para a dele![alt text](image.png)gação das atividades a serem realizadas;
 2. **Escolha de Agentes com Proficiência Adequada:** uma vez listados os agentes subordinados com a devida especialidade necessária, o agente *manager* deve ser capaz de requisitar aos mesmos suas proficiências nas devidas especialidades. Por sua vez, os agentes subordinados devem ser capazes de informar aos *manager*es suas proficiências, que devem ser usadas por eles para a avaliação da possibilidade de execução das operações por estes;
 3. **Delegação de Atividades:** tendo encontrado agentes com a especialidade adequada e a proficiência superior a um limiar mínimo na mesma, o agente *manager* deve ser capaz de solicitar ao subordinado a realização da operação específica sobre um conjunto de dados;
 4. ***Timeout* de Espera por Respostas:** uma vez solicitada a execução das operações específicas para os agentes subordinados, o agente *manager* deve ser capaz de iniciar um *timeout* para aguardar o envio das respostas;

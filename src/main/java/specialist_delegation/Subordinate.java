@@ -106,6 +106,10 @@ public class Subordinate extends BaseAgent {
 						if ( !brokenAgent )
 							receivedAcceptedProposalHandler(msg);
 						break;
+					case ACLMessage.REJECT_PROPOSAL:
+						logger.log(Level.INFO, String.format("PROPOSAL SENT BY %d WAS REJECTED!",
+							getLocalName()));
+						break;
 					default:
 						logger.log(Level.INFO,
 							String.format("%s %s RECEIVED UNEXPECTED MESSAGE PERFORMATIVE FROM %s %s", ANSI_YELLOW, getLocalName(),

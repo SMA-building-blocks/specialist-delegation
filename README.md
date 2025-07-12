@@ -40,37 +40,51 @@ Recebidos todos os resultados das operações requisitadas, finaliza-se a execu�
 
 Além disso, há também a possibilidade de ativação durante a execução do *building block* da funcionalidade de *malfunctioning agents*, a qual permitirá que os agentes sejam randomicamente inutilizados, não retornando nenhuma resposta para as operações solicitadas. Esta funcionalidade permite o uso mais direto da lógica de *timeout* disponibilizada pela estrutura.
 
+## Diagramação
+
+Abaixo, é apresentado o Diagrama de Classes que visa representar a estrutura e organização das classes que compõem o sistema, para além das relações entre estas.
+
+<img src="assets/diagrama_de_classes.png" alt="Diagrama de Classes">
+
+*Figura 1: Diagrama de Classes da Aplicação*
+
+Já abaixo, é apresentado o Diagrama de Sequências, o qual busca apresentar os fluxos de interação e algumas de suas nuances entre todas as classes (instanciadas enquanto agentes) da aplicação desenvolvida.
+
+<img src="assets/diagrama_de_sequencias.png" alt="Diagrama de Sequências">
+
+*Figura 2: Diagrama de Sequências da Aplicação*
+
 ## Projeto em Execução
 
-Inicialmente, na *Figura 1*, é possível visualizar a partir do *sniffer* todos os agentes inicialmentes criados pelo *creator* para a realização das atividades do *building block*. Dentre estes, estão o agente *manager* e os agentes subordinados.
+Inicialmente, na *Figura 3*, é possível visualizar a partir do *sniffer* todos os agentes inicialmentes criados pelo *creator* para a realização das atividades do *building block*. Dentre estes, estão o agente *manager* e os agentes subordinados.
 
 <img src="assets/figura1.png" alt="Visualização dos Agentes pelo *Sniffer*">
 
-*Figura 1: Visualização dos Agentes pelo *Sniffer**
+*Figura 3: Visualização dos Agentes pelo *Sniffer**
 
-Logo em seguida, na *Figura 2*, é possível ver a mensagem enviada do *creator* para o *manager* solicitando a execução de todas as atividades em conjunto aos dados especificados.
+Logo em seguida, na *Figura 4*, é possível ver a mensagem enviada do *creator* para o *manager* solicitando a execução de todas as atividades em conjunto aos dados especificados.
 
 <img src="assets/figura2.png" alt="Mensagem de *Start* com os Dados Especificados">
 
-*Figura 2: Mensagem de *Start* com os Dados Especificados*
+*Figura 4: Mensagem de *Start* com os Dados Especificados*
 
-Por conseguinte, na *Figura 3*, é possível ver o retorno de um agente subordinado ao *manager* com a proficiência de uma especialidade conforme requisição do mesmo.
+Por conseguinte, na *Figura 5*, é possível ver o retorno de um agente subordinado ao *manager* com a proficiência de uma especialidade conforme requisição do mesmo.
 
 <img src="assets/figura3.png" alt="Mensagem com Informe de Proficiência de uma Especialidade">
 
-*Figura 3: Mensagem com Informe de Proficiência de uma Especialidade*
+*Figura 5: Mensagem com Informe de Proficiência de uma Especialidade*
 
-Já na *Figura 4*, é possível ver a mensagem solicitando a criação de um agente com uma devida especialidade enviada pelo *manager* para o agente *creator*.
+Já na *Figura 6*, é possível ver a mensagem solicitando a criação de um agente com uma devida especialidade enviada pelo *manager* para o agente *creator*.
 
 <img src="assets/figura4.png" alt="Mensagem Solicitando a Criação de um Agente com uma Devida Especialidade">
 
-*Figura 4: Mensagem Solicitando a Criação de um Agente com uma Devida Especialidade*
+*Figura 6: Mensagem Solicitando a Criação de um Agente com uma Devida Especialidade*
 
-Por fim, na *Figura 5*, é possível ver o número de agentes subordinados criados para a devida aplicação de todas as operações sobre os dados recebidos pelo *manager*.
+Por fim, na *Figura 7*, é possível ver o número de agentes subordinados criados para a devida aplicação de todas as operações sobre os dados recebidos pelo *manager*.
 
 <img src="assets/figura5.png" alt="Visualização de Todos os Agentes Após Aplicação de Todas as Operações">
 
-*Figura 5: Visualização de Todos os Agentes Após Aplicação de Todas as Operações*
+*Figura 7: Visualização de Todos os Agentes Após Aplicação de Todas as Operações*
 
 ## Requisitos Técnicos
 

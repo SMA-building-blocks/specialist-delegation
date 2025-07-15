@@ -107,8 +107,9 @@ public class Subordinate extends BaseAgent {
 							receivedAcceptedProposalHandler(msg);
 						break;
 					case ACLMessage.REJECT_PROPOSAL:
-						logger.log(Level.INFO, String.format("PROPOSAL SENT BY %d WAS REJECTED!",
-							getLocalName()));
+						logger.log(Level.INFO, 
+							String.format("PROPOSAL SENT BY %s WAS REJECTED!",
+									getLocalName()));
 						break;
 					default:
 						logger.log(Level.INFO,
